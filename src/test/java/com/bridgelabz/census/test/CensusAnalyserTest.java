@@ -10,12 +10,7 @@ public class CensusAnalyserTest {
     String filePath="/home/admin3/Desktop/knkns/intelliJ/FileCsv/IndiaStateCensusData.csv";
     CensusAnalyser analyser;
     @Test
-    public void testWelcomeMessage() {
-        analyser.WelcomeMessage();
-    }
-
-    @Test
-    public void loadCSVFile() {
+    public void givenCSVFilePath_ShouldReturn_NoOfRecords() {
         try {
             int count=analyser.loadData(filePath);
             Assert.assertEquals(29,count);
