@@ -1,24 +1,62 @@
 package com.bridgelabz.census.test;
 
 import com.bridgelabz.census.CensusAnalyser;
+import com.bridgelabz.census.CensusAnalyserException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class CensusAnalyserTest {
 
-    String filePath="/home/admin3/Desktop/knkns/intelliJ/FileCsv/IndiaStateCensusData.csv";
     CensusAnalyser analyser;
+    private static final String INDIA_CENSUS_CSV_FILE_PATH = "./src/test/resources/IndiaStateCensusData.csv";
+    private static final String INDIA_CENSUS_WRONG_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusData.csv";
+    private static final String INDIA_CENSUS_WRONG_EXT_CSV_FILE = "./src/test/resources/IndiaStateCensusData.cv";
+    private static final String INDIA_STATE_CSV_FILE_PATH="./src/test/resources/IndiaStateCode.csv";
+    private static final String INDIA_STATE_WRONG_CSV_FILE_PATH="./src/resources/IndiaStateCode.csv";
+
     @Test
-    public void givenCSVFilePath_ShouldReturn_NoOfRecords() {
+    public void givenIndiaStateCensusPath_Correct_ShouldReturn_NoOfRecords() {
         try {
-            int count=analyser.loadData(filePath);
+            int count=analyser.loadDataIndiaStateCensus(INDIA_CENSUS_CSV_FILE_PATH);
             Assert.assertEquals(29,count);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (CensusAnalyserException e) { }
+    }
+
+    @Test
+    public void givenIndiaStateCensusPath_Wrong_ShouldThrow_Exception() {
+        try {
+            analyser.loadDataIndiaStateCensus(INDIA_CENSUS_WRONG_CSV_FILE_PATH);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
         }
     }
 
+    @Test
+    public void givenIndiaStateCensusExtension_Wrong_ShouldThrow_Exception() {
+        try {
+            analyser.loadDataIndiaStateCensus(INDIA_CENSUS_WRONG_EXT_CSV_FILE);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
+        }
+    }
+
+    @Test
+    public void givenIndiaStateCodePath_Correct_ShouldReturn_NoOfRecords() {
+        try {
+            int count=analyser.loadDataIndiaStateCode(INDIA_STATE_CSV_FILE_PATH);
+            Assert.assertEquals(37,count);
+        } catch (CensusAnalyserException e) {  }
+    }
+
+    @Test
+    public void givenIndiaStateCodePath_Wrong_ShouldReturn_Exception() {
+        try {
+            analyser.loadDataIndiaStateCode(INDIA_STATE_WRONG_CSV_FILE_PATH);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
+        }
+    }
     @Before
     public void setUp() throws Exception {
         analyser=new CensusAnalyser();
