@@ -1,13 +1,11 @@
 package com.bridgelabz.census;
 
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class CensusAnalyser {
@@ -16,22 +14,24 @@ public class CensusAnalyser {
 
         try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
-            Iterator<IndiaStateCensus> censusCSVIterator =  csvBuilder.getCSVFileIterator(reader,IndiaStateCensus.class);
-            return getCount(censusCSVIterator);
-
+            List<IndiaStateCensus> censusList=csvBuilder.getCSVFileList(reader,IndiaStateCensus.class);
+            return censusList.size();
         } catch (IOException ioe) {
             throw new CensusAnalyserException(ioe.getMessage(),CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
+        } catch (CSVBuilderException e) {
+            throw new CensusAnalyserException(e.getMessage(),e.type.name());
         }
     }
 
     public int loadDataIndiaStateCode(String csvFilePath) throws CensusAnalyserException {
         try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
-            Iterator<IndiaStateCode> codeCSVIterator=csvBuilder.getCSVFileIterator(reader,IndiaStateCode.class);
-            return getCount(codeCSVIterator);
-
+            List<IndiaStateCode> codeList=csvBuilder.getCSVFileList(reader,IndiaStateCode.class);
+            return codeList.size();
         } catch (IOException ioe) {
             throw new CensusAnalyserException(ioe.getMessage(),CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
+        } catch (CSVBuilderException e) {
+           throw new CensusAnalyserException(e.getMessage(),e.type.name());
         }
     }
 

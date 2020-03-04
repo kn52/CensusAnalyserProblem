@@ -1,9 +1,17 @@
 package com.bridgelabz.census;
 
 public class CensusAnalyserException extends RuntimeException{
+
+
     public enum ExceptionType{
-        UNABLE_TO_PARSE,CENSUS_FILE_PROBLEM, FILE_FORMAT_PROBLEM;
+        CENSUS_FILE_PROBLEM;
     }
+
+    public CensusAnalyserException(String message, String name) {
+        super(message);
+        this.type=ExceptionType.valueOf(name);
+    }
+
     public ExceptionType type;
 
     public CensusAnalyserException(String message, ExceptionType type) {
