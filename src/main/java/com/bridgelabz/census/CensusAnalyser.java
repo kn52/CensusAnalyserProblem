@@ -21,14 +21,23 @@ public class CensusAnalyser {
         censusMap=new HashMap();
     }
 
-    public int loadDataIndiaStateCensus(String csvFilePath) {
+    public <E> int loadCensusData(String csvFilePath,Class<E> className) {
 
         try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
-            Iterator<IndiaStateCensus> stateCensus= csvBuilder.getCSVFileIterator(reader,IndiaStateCensus.class);
-            Iterable<IndiaStateCensus> stateCensusIterable=()->stateCensus;
-            StreamSupport.stream(stateCensusIterable.spliterator(),false)
-                    .forEach(indiaStateCode -> censusMap.put(indiaStateCode.state,new CensusDTO(indiaStateCode)));
+            Iterator<E> stateCensus= csvBuilder.getCSVFileIterator(reader,className);
+            Iterable<E> stateCensusIterable=()->stateCensus;
+            System.out.println(className.getName());
+            if (className.getName().equals("com.bridgelabz.census.IndiaStateCensus")){
+                StreamSupport.stream(stateCensusIterable.spliterator(),false)
+                        .map(IndiaStateCensus.class::cast)
+                        .forEach(indiaStateCode -> censusMap.put(indiaStateCode.state,new CensusDTO(indiaStateCode)));
+            }
+            else if(className.getName().equals("com.bridgelabz.census.USStateCensus")){
+                StreamSupport.stream(stateCensusIterable.spliterator(),false)
+                        .map(USStateCensus.class::cast)
+                        .forEach(indiaStateCode -> censusMap.put(indiaStateCode.state,new CensusDTO(indiaStateCode)));
+            }
             censusList=censusMap.values().stream().collect(Collectors.toList());
             return censusMap.size();
         } catch (IOException ioe) {
@@ -36,6 +45,14 @@ public class CensusAnalyser {
         } catch (CSVBuilderException e) {
             throw new CensusAnalyserException(e.getMessage(),e.type.name());
         }
+    }
+    public int loadDataIndiaStateCensus(String csvFilePath) {
+
+        return loadCensusData(csvFilePath,IndiaStateCensus.class);
+    }
+
+    public int loadDataUSStateCensus(String csvFilePath) {
+        return loadCensusData(csvFilePath,USStateCensus.class);
     }
 
     public int loadDataIndiaStateCode(String csvFilePath){
@@ -56,21 +73,6 @@ public class CensusAnalyser {
         }
     }
 
-    public int loadDataUSStateCensus(String csvFilePath) {
-        try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
-            ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
-            Iterator<USStateCensus> stateCensus= csvBuilder.getCSVFileIterator(reader,USStateCensus.class);
-            Iterable<USStateCensus> stateCensusIterable=()->stateCensus;
-            StreamSupport.stream(stateCensusIterable.spliterator(),false)
-                    .forEach(USStateCode -> censusMap.put(USStateCode.state,new CensusDTO(USStateCode)));
-        censusList=censusMap.values().stream().collect(Collectors.toList());
-        return censusMap.size();
-    } catch (IOException ioe) {
-        throw new CensusAnalyserException(ioe.getMessage(),CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
-    } catch (CSVBuilderException e) {
-        throw new CensusAnalyserException(e.getMessage(),e.type.name());
-    }
-    }
     private <E> int getCount(Iterator<E> Iterator) {
         Iterable<E> census=()-> Iterator;
         int numOfEnteries =(int) StreamSupport.stream(census.spliterator(),false).count();
