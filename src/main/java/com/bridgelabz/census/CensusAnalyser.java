@@ -21,38 +21,17 @@ public class CensusAnalyser {
         censusMap=new HashMap();
     }
 
-    public <E> int loadCensusData(String csvFilePath,Class<E> className) {
 
-        try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
-            ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
-            Iterator<E> stateCensus= csvBuilder.getCSVFileIterator(reader,className);
-            Iterable<E> stateCensusIterable=()->stateCensus;
-            System.out.println(className.getName());
-            if (className.getName().equals("com.bridgelabz.census.IndiaStateCensus")){
-                StreamSupport.stream(stateCensusIterable.spliterator(),false)
-                        .map(IndiaStateCensus.class::cast)
-                        .forEach(indiaStateCode -> censusMap.put(indiaStateCode.state,new CensusDTO(indiaStateCode)));
-            }
-            else if(className.getName().equals("com.bridgelabz.census.USStateCensus")){
-                StreamSupport.stream(stateCensusIterable.spliterator(),false)
-                        .map(USStateCensus.class::cast)
-                        .forEach(indiaStateCode -> censusMap.put(indiaStateCode.state,new CensusDTO(indiaStateCode)));
-            }
-            censusList=censusMap.values().stream().collect(Collectors.toList());
-            return censusMap.size();
-        } catch (IOException ioe) {
-            throw new CensusAnalyserException(ioe.getMessage(),CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
-        } catch (CSVBuilderException e) {
-            throw new CensusAnalyserException(e.getMessage(),e.type.name());
-        }
-    }
     public int loadDataIndiaStateCensus(String csvFilePath) {
-
-        return loadCensusData(csvFilePath,IndiaStateCensus.class);
+        censusMap=new CensusLoader().loadCensusData(csvFilePath,IndiaStateCensus.class);
+        censusList=censusMap.values().stream().collect(Collectors.toList());
+        return censusMap.size();
     }
 
     public int loadDataUSStateCensus(String csvFilePath) {
-        return loadCensusData(csvFilePath,USStateCensus.class);
+        censusMap=new CensusLoader().loadCensusData(csvFilePath,USStateCensus.class);
+        censusList=censusMap.values().stream().collect(Collectors.toList());
+        return censusMap.size();
     }
 
     public int loadDataIndiaStateCode(String csvFilePath){
