@@ -12,6 +12,9 @@ import java.util.stream.StreamSupport;
 
 public class CensusAnalyser {
 
+    public enum Country{
+        INDIA,US
+    }
     List<CensusDTO> censusList=null;
 
     Map<String, CensusDTO> censusMap=null;
@@ -22,19 +25,13 @@ public class CensusAnalyser {
     }
 
 
-    public int loadDataIndiaStateCensus(String ...csvFilePath) {
-        censusMap=new CensusLoader().loadCensusData(IndiaStateCensus.class,csvFilePath);
+    public int loadDataCensus(Country country,String ...csvFilePath) {
+        censusMap=new CensusLoader().loadCensusData(country,csvFilePath);
         censusList=censusMap.values().stream().collect(Collectors.toList());
         return censusMap.size();
     }
 
-    public int loadDataUSStateCensus(String ...csvFilePath) {
-        censusMap=new CensusLoader().loadCensusData(USStateCensus.class,csvFilePath);
-        censusList=censusMap.values().stream().collect(Collectors.toList());
-        return censusMap.size();
-    }
-
-    private <E> int getCount(Iterator<E> Iterator) {
+   private <E> int getCount(Iterator<E> Iterator) {
         Iterable<E> census=()-> Iterator;
         int numOfEnteries =(int) StreamSupport.stream(census.spliterator(),false).count();
         return numOfEnteries;
