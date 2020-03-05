@@ -26,10 +26,9 @@ public class CensusAnalyser {
         try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
             Iterator<IndiaStateCensus> stateCensus= csvBuilder.getCSVFileIterator(reader,IndiaStateCensus.class);
-            while(stateCensus.hasNext()){
-                CensusDTO csv=new CensusDTO(stateCensus.next());
-                this.censusMap.put(csv.state,csv) ;
-            }
+            Iterable<IndiaStateCensus> stateCensusIterable=()->stateCensus;
+            StreamSupport.stream(stateCensusIterable.spliterator(),false)
+                    .forEach(indiaStateCode -> censusMap.put(indiaStateCode.state,new CensusDTO(indiaStateCode)));
             censusList=censusMap.values().stream().collect(Collectors.toList());
             return censusMap.size();
         } catch (IOException ioe) {
@@ -61,10 +60,9 @@ public class CensusAnalyser {
         try(Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvBuilder=CSVBuilderFactory.createBuilder();
             Iterator<USStateCensus> stateCensus= csvBuilder.getCSVFileIterator(reader,USStateCensus.class);
-            while(stateCensus.hasNext()){
-                CensusDTO csv=new CensusDTO(stateCensus.next());
-                this.censusMap.put(csv.state,csv) ;
-        }
+            Iterable<USStateCensus> stateCensusIterable=()->stateCensus;
+            StreamSupport.stream(stateCensusIterable.spliterator(),false)
+                    .forEach(USStateCode -> censusMap.put(USStateCode.state,new CensusDTO(USStateCode)));
         censusList=censusMap.values().stream().collect(Collectors.toList());
         return censusMap.size();
     } catch (IOException ioe) {
