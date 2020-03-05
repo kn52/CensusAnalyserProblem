@@ -46,8 +46,9 @@ public class CensusAnalyserTest {
     @Test
     public void givenIndiaStateCodePath_Correct_ShouldReturn_NoOfRecords() {
         try {
+            analyser.loadDataIndiaStateCensus(INDIA_CENSUS_CSV_FILE_PATH);
             int count=analyser.loadDataIndiaStateCode(INDIA_STATE_CSV_FILE_PATH);
-            Assert.assertEquals(37,count);
+            Assert.assertEquals(29,count);
         } catch (CensusAnalyserException e) {  }
     }
 
@@ -68,6 +69,30 @@ public class CensusAnalyserTest {
             IndiaStateCensus[] censusCsv = new Gson().fromJson(sortCensusData, IndiaStateCensus[].class);
             Assert.assertEquals("Andhra Pradesh",censusCsv[0].state);
         }catch(CensusAnalyserException e){}
+    }
+
+    @Test
+    public void givenIndiaStateCensus_WhenSortedOnPopulation_ShouldReturnSortedResult() {
+        analyser.loadDataIndiaStateCensus(INDIA_CENSUS_CSV_FILE_PATH);
+        String sortCensusData = analyser.getPopulationWiseSortCensusData();
+        IndiaStateCensus[] censusCsv = new Gson().fromJson(sortCensusData, IndiaStateCensus[].class);
+        Assert.assertEquals(199812341,censusCsv[censusCsv.length-1].population);
+    }
+
+    @Test
+    public void givenIndiaStateCensus_WhenSortedOnDensity_ShouldReturnSortedResult() {
+        analyser.loadDataIndiaStateCensus(INDIA_CENSUS_CSV_FILE_PATH);
+        String sortCensusData = analyser.getDensityWiseSortCensusData();
+        IndiaStateCensus[] censusCsv = new Gson().fromJson(sortCensusData, IndiaStateCensus[].class);
+        Assert.assertEquals(607688,censusCsv[censusCsv.length-1].population);
+    }
+
+    @Test
+    public void givenIndiaStateCensus_WhenSortedOnArea_ShouldReturnSortedResult() {
+        analyser.loadDataIndiaStateCensus(INDIA_CENSUS_CSV_FILE_PATH);
+        String sortCensusData = analyser.getAreaWiseSortCensusData();
+        IndiaStateCensus[] censusCsv = new Gson().fromJson(sortCensusData, IndiaStateCensus[].class);
+        Assert.assertEquals(103804637,censusCsv[censusCsv.length-1].population);
     }
 
     @Before
