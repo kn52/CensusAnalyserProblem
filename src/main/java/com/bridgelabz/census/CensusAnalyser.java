@@ -2,10 +2,6 @@ package com.bridgelabz.census;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,7 +22,7 @@ public class CensusAnalyser {
 
 
     public int loadDataCensus(Country country,String ...csvFilePath) {
-        censusMap=new CensusLoader().loadCensusData(country,csvFilePath);
+        censusMap=CensusAdaptorFactory.getCensusData(country,csvFilePath);
         censusList=censusMap.values().stream().collect(Collectors.toList());
         return censusMap.size();
     }
